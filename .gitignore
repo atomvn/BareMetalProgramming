@@ -23,4 +23,5 @@
 app/*.elf
 app/*.bin
 app/*.hex
+app/*.o
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode

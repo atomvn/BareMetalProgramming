@@ -6,7 +6,7 @@
     "configurations": [
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./app/firmware.hex",
+            "executable": "./app/firmware.elf",
             "name": "Debug with OpenOCD",
             "request": "launch",
             "type": "cortex-debug",
@@ -19,15 +19,5 @@
             "runToEntryPoint": "main",
             "showDevDebugOutput": "none"
         },
-        // {
-        //     "cwd": "${workspaceFolder}",
-        //     "executable": "./bin/executable.elf",
-        //     "name": "Debug with ST-Link",
-        //     "request": "launch",
-        //     "type": "cortex-debug",
-        //     "runToEntryPoint": "main",
-        //     "showDevDebugOutput": "none",
-        //     "servertype": "stlink"
-        // },
     ]
 }

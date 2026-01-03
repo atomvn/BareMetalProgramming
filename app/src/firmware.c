@@ -1,72 +1,30 @@
+#include <core/rcc.h>
+// #include <libopencm3/stm32/gpio.h>
+// #include <core/i2c.h>
+// #include <mpu_6050.h>
+#include <core/gpio.h>
 
-/*
- * This file is part of the libopencm3 project.
- *
- * Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
- *
- * This library is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
- */
+int main() {
+    clock_setup_pll_72mhz();
+	gpio_enable_clock(GPIOC);
+	gpio_enable_clock(GPIOA);
+	gpio_mode_setup(GPIOC, 13, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL);
+	// gpio_clear(GPIOC, 13);
+	gpio_mode_setup(GPIOA, 0, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL);
+	// gpio_set(GPIOA, 0);
+	/* PA0: input pull-up */
+    gpio_mode_setup(GPIOA, 3, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN);
 
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/gpio.h>
-
-static void gpio_setup(void)
-{
-	/* Enable GPIOC clock. */
-	/* Manually: */
-	// RCC_APB2ENR |= RCC_APB2ENR_IOPCEN;
-	/* Using API functions: */
-	rcc_periph_clock_enable(RCC_GPIOC);
-
-	/* Set GPIO12 (in GPIO port C) to 'output push-pull'. */
-	/* Manually: */
-	// GPIOC_CRH = (GPIO_CNF_OUTPUT_PUSHPULL << (((12 - 8) * 4) + 2));
-	// GPIOC_CRH |= (GPIO_MODE_OUTPUT_2_MHZ << ((12 - 8) * 4));
-	/* Using API functions: */
-	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ,
-		      GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
-}
-
-int main(void)
-{
-	int i;
-
-	gpio_setup();
-
-	/* Blink the LED (PC12) on the board. */
-	while (1) {
-		/* Manually: */
-		// GPIOC_BSRR = GPIO12;		/* LED off */
-		// for (i = 0; i < 800000; i++)	/* Wait a bit. */
-		// 	__asm__("nop");
-		// GPIOC_BRR = GPIO12;		/* LED on */
-		// for (i = 0; i < 800000; i++)	/* Wait a bit. */
-		// 	__asm__("nop");
-
-		/* Using API functions gpio_set()/gpio_clear(): */
-		// gpio_set(GPIOC, GPIO12);	/* LED off */
-		// for (i = 0; i < 800000; i++)	/* Wait a bit. */
-		// 	__asm__("nop");
-		// gpio_clear(GPIOC, GPIO12);	/* LED on */
-		// for (i = 0; i < 800000; i++)	/* Wait a bit. */
-		// 	__asm__("nop");
-
-		/* Using API function gpio_toggle(): */
-		gpio_toggle(GPIOC, GPIO13);	/* LED on/off */
-		for (i = 0; i < 400000; i++)	/* Wait a bit. */
-			__asm__("nop");
+	while(1) {
+		if (gpio_read(GPIOA, 3) == 1){
+			gpio_clear(GPIOA, 0);
+		}
+		else {
+			gpio_set(GPIOA, 0);
+		}
+		// mpu6050_read_accel(&ax, &ay, &az);
+		// gpio_clear(GPIOC, GPIO13);
+		// // printf("Ax: %d, Ay: %d, Az: %d", ax, ay, az);
+		// for (volatile int i = 0; i < 72000000; i++);	
 	}
-
-	return 0;
 }

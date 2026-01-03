@@ -49,6 +49,10 @@ GDB := $(PREFIX)gdb
 ########################################################################
 #OBJECT FILES
 OBJS += src/firmware.o
+# OBJS += src/mpu_6050.o
+OBJS += src/core/gpio.o
+# OBJS += src/core/i2c.o
+OBJS += src/core/rcc.o
 
 ########################################################################
 #COMPILER AND LINKER FLAGS
@@ -65,9 +69,11 @@ $(OPENCM3_DIR)/lib/lib$(LIBNAME).a:
 
 ########################################################################
 #BUILD
+#Compile every .c file to .o file, $<(First dependent file) = .c file, $@ = target
 %.o: %.c
 	$(CC) $(CFLAGS) $(DEFS) -c $< -o $@
 
+#.o -> firmware.elf, link object files and libopencm3_stm321 lib to generate elf file
 firmware.elf: $(OBJS) $(OPENCM3_DIR)/lib/lib$(LIBNAME).a
 	$(LD) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
 
@@ -80,4 +86,4 @@ firmware.hex: firmware.elf
 ########################################################################
 #CLEAN
 clean:
-	rm -f $(OBJS) *.elf *.bin *.hex
+	rm -f $(OBJS) *.elf *.bin *.hex 

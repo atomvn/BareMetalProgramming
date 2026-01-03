@@ -23,6 +23,7 @@ app/*.elf
 app/*.bin
 app/*.hex
 app/*.o
+app/src/*.o
 
 libopencm3-examples
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode

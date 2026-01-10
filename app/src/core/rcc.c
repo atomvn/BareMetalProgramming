@@ -1,5 +1,6 @@
 #include <core/rcc.h>
 
+// Set up HSI clock 8MHz
 void clock_setup_hsi(void) {
         /* 1. Enable HSI */
     RCC_CR |= (1 << 0);                 // HSION
@@ -17,6 +18,7 @@ void clock_setup_hsi(void) {
     while (((RCC_CFGR >> 2) & 0x3) != 0x0);  // SWS = HSI
 }
 
+// Set up HSE clock 8MHz
 void clock_setup_hse(void)
 {
     /* 1. Enable HSE */
@@ -36,6 +38,7 @@ void clock_setup_hse(void)
     while (((RCC_CFGR >> 2) & 0x3) != 0x1);
 }
 
+// Set up sys clock using pll 72MHz, source clock HSE 
 void clock_setup_pll_72mhz(void) {
     /* 1. Enable HSE */
     RCC_CR |= (1 << 16);

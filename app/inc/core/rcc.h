@@ -9,10 +9,13 @@
 #define RCC_APB1ENR				MMIO32(RCC_BASE + 0x1c)
 #define RCC_CSR					MMIO32(RCC_BASE + 0x24)
 
-#define FLASH_ACR			MMIO32(FLASH_MEM_INTERFACE_BASE + 0x00)
+#define FLASH_ACR			    MMIO32(FLASH_MEM_INTERFACE_BASE + 0x00)
 
-#define RCC_GPIOA               (1 << 2)
-#define RCC_UART1               (1 << 14)
+#define RCC_AFIO_EN             (1 << 0)
+#define RCC_GPIOA_EN            (1 << 2)
+#define RCC_GPIOB_EN            (1 << 3)
+#define RCC_UART1_EN            (1 << 14)
+#define RCC_I2C1_EN             (1 << 21)
 
 void clock_setup_hsi(void);
 void clock_setup_hse(void);

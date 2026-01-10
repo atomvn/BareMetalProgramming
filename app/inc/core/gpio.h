@@ -124,7 +124,6 @@
 #define GPIO15				(1 << 15)
 #define GPIO_ALL			0xffff
 
-// void gpio_setup(void);
 void gpio_enable_clock(uint32_t port);
 void gpio_mode_setup(uint32_t port, uint8_t pin, uint8_t mode, uint8_t cnf);
 void gpio_set(uint32_t port, uint8_t pin);

@@ -44,3 +44,5 @@ void uart1_init(void);
 void uart1_send_char(char c);
 void uart1_send_string(const char *s);
 char uart1_receive_char(void);
+void uart1_send_int16(int16_t num);
+void uart1_send_float(float value, uint8_t precision);

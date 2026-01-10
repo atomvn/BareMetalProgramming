@@ -15,14 +15,17 @@ void systick_init(uint32_t sysclk_hz)
               STK_CSR_ENABLE;  // Enable SysTick + IRQ
 }
 
+// Define systick handle
 void sys_tick_handler(void) {
     system_millis++;
 }
 
+// Millis function to return current time
 uint32_t millis(void) {
     return system_millis;
 }
 
+// Delay blocking the program
 void delay_ms(uint32_t ms){
     uint32_t start = millis();
     while (millis() - start < ms);

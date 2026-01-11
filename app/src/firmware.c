@@ -3,8 +3,8 @@
 #include <core/systick.h>
 #include <core/uart.h>
 #include <core/i2c.h>
+#include <core/exti.h>
 #include <mpu_6050.h>
-#include <libopencm3/stm32/f1/i2c.h>
 
 int main() {
 	// Set up sys clock using pll 
@@ -15,14 +15,20 @@ int main() {
 	uart1_init();
 	// Init i2c1
 	i2c1_init();
+	// Init exti and configure PA0 as INT pin of mpu6050
+	gpio_exti_pa0_init();
+	afio_exti0_map_pa0();
+	exti0_init();
+	nvic_exti0_enable();
+
 	// Init mpu6050
 	mpu6050_init();
 	// Enable GPIO and configure GPIO pin
 	gpio_enable_clock(GPIOC);
-	gpio_enable_clock(GPIOA);
+	// gpio_enable_clock(GPIOA);
 	gpio_mode_setup(GPIOC, 13, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL);
-	gpio_mode_setup(GPIOA, 0, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL);
-    gpio_mode_setup(GPIOA, 3, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN);
+	// gpio_mode_setup(GPIOA, 0, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL);
+    // gpio_mode_setup(GPIOA, 3, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN);
 	// Mpu6050 data struct val
 	mpu6050_raw_t mpu;
 
@@ -39,35 +45,39 @@ int main() {
 		// 		gpio_set(GPIOA, 0);
 		// 	}
 		// }
+			if (mpu_int_flag) {
+				// Toggle led
+				gpio_toggle(GPIOC, 13);
+				// Read mpu6050 data
+				mpu6050_read_raw(&mpu);
+				mpu_int_flag = 0;
+			} 
 		}
 		else {
-			// Toggle led
-			gpio_toggle(GPIOC, 13);
-			// Read mpu6050 data
-			mpu6050_read_raw(&mpu);
-			// Print mpu6050 data
-			uart1_send_string("==============MPU6050 data=================\n");
-			uart1_send_string("ax: ");
-			uart1_send_float(mpu.ax, 5);
-			uart1_send_char('\n');
-			uart1_send_string("ay: ");
-			uart1_send_float(mpu.ay, 5);
-			uart1_send_char('\n');
-			uart1_send_string("az: ");
-			uart1_send_float(mpu.az, 5);
-			uart1_send_char('\n');
+				// Print mpu6050 data
+				uart1_send_string("==============MPU6050 data=================\n");
+				uart1_send_string("ax: ");
+				uart1_send_float(mpu.ax, 5);
+				uart1_send_char('\n');
+				uart1_send_string("ay: ");
+				uart1_send_float(mpu.ay, 5);
+				uart1_send_char('\n');
+				uart1_send_string("az: ");
+				uart1_send_float(mpu.az, 5);
+				uart1_send_char('\n');
 
-			uart1_send_string("gx: ");
-			uart1_send_float(mpu.gx, 5);
-			uart1_send_char('\n');
-			uart1_send_string("gy: ");
-			uart1_send_float(mpu.gy, 5);
-			uart1_send_char('\n');
-			uart1_send_string("gz: ");
-			uart1_send_float(mpu.gz, 5);
-			uart1_send_char('\n');
-			// Reassign start time
-			start = millis();
-		} 
+				uart1_send_string("gx: ");
+				uart1_send_float(mpu.gx, 5);
+				uart1_send_char('\n');
+				uart1_send_string("gy: ");
+				uart1_send_float(mpu.gy, 5);
+				uart1_send_char('\n');
+				uart1_send_string("gz: ");
+				uart1_send_float(mpu.gz, 5);
+				uart1_send_char('\n');
+				// Reassign start time
+				start = millis();
+				// mpu6050_read(0x75);
+		}
 	}
 }

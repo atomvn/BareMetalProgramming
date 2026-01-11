@@ -10,8 +10,10 @@ void mpu6050_write(uint8_t reg, uint8_t data)
     i2c_send_address(MPU6050_ADDR, 0);
     // uart1_send_string("MPU address sent\n");
     i2c_write_byte(reg);
+    while (!(I2C1_SR1 & (1 << 7))); // TXE
     // uart1_send_string("Write reg sucessfully\n");
     i2c_write_byte(data);
+    while (!(I2C1_SR1 & (1 << 7))); // TXE
     // uart1_send_string("Write byte sucessfully\n");
     i2c_stop();
     // uart1_send_string("Stop sucessfully\n");
@@ -55,6 +57,10 @@ void mpu6050_init(void)
 
         /* Accel ±2g */
         mpu6050_write(MPU6050_ACCEL_CFG, 0x00);
+        
+        // Enable INT pin on MPU6050, allow interrupt
+        // INT_ENABLE register (0x38) bit 0 = DATA_RDY_EN
+        mpu6050_write(0x38, 0x01);
         delay_ms(100);
     }
 }
@@ -101,10 +107,10 @@ void mpu6050_read_raw(mpu6050_raw_t *d)
         buf[i] = I2C1_DR;
     }
 
-    // Stop I2C
-    i2c_stop();
     // Turn off ACK
     I2C1_CR1 &= ~(1 << 10); // ACK = 0
+    // Stop I2C
+    i2c_stop();
     // Check RXNE
     while (!(I2C1_SR1 & (1 << 6)));
     // Get last byte

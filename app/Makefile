@@ -54,7 +54,7 @@ OBJS += src/core/gpio.o
 OBJS += src/core/systick.o
 OBJS += src/core/uart.o
 OBJS += src/core/i2c.o
-# OBJ += 	src/mpu_6050.o
+OBJS += src/core/exti.o
 OBJS += src/mpu_6050.o
 # OBJS += src/core/i2c.o
 

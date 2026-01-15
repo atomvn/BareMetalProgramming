@@ -7,11 +7,8 @@
 
 ########################################################################
 #FOLDERS
-SRC_DIR        = src
-INC_DIR        = inc
+INC_DIR		   = inc
 OPENCM3_DIR    = ../libopencm3
-SHARED_SRC_DIR = ../shared/src
-SHARED_INC_DIR = ../shared/inc
 
 ########################################################################
 #BINARY FILES
@@ -34,7 +31,6 @@ LDSCRIPT = linkerscript.ld
 #INCLUDE PATH AND DEFINES
 DEFS += -I$(OPENCM3_DIR)/include
 DEFS += -I$(INC_DIR)
-DEFS += -I$(SHARED_INC_DIR)
 
 ########################################################################
 #CONFIGURE TOOL CHAIN
@@ -48,15 +44,12 @@ GDB := $(PREFIX)gdb
 
 ########################################################################
 #OBJECT FILES
-OBJS += src/firmware.o
-OBJS += src/core/rcc.o
-OBJS += src/core/gpio.o
-OBJS += src/core/systick.o
-OBJS += src/core/uart.o
-OBJS += src/core/i2c.o
-OBJS += src/core/exti.o
-OBJS += src/mpu_6050.o
-# OBJS += src/core/i2c.o
+SRC        := $(wildcard **/*.c)
+SRC        += $(wildcard src/**/*.c)
+OBJS := $(patsubst %.c, build/%.o, $(SRC))
+ELF_FILE   = build/firmware.elf
+BIN_FILE   = build/firmware.bin
+HEX_FILE   = build/firmware.hex
 
 ########################################################################
 #COMPILER AND LINKER FLAGS
@@ -64,7 +57,7 @@ CFLAGS = -Os -ggdb3 $(ARCH_FLAGS) -ffunction-sections -fdata-sections
 LDFLAGS = -T$(LDSCRIPT) $(ARCH_FLAGS) -nostartfiles -Wl,--gc-sections -L$(OPENCM3_DIR)/lib
 LDLIBS = -l$(LIBNAME)
 
-all: firmware.elf firmware.bin firmware.hex
+all: $(ELF_FILE) $(BIN_FILE) $(HEX_FILE)
 
 ########################################################################
 #STARTUP FILE
@@ -74,20 +67,24 @@ $(OPENCM3_DIR)/lib/lib$(LIBNAME).a:
 ########################################################################
 #BUILD
 #Compile every .c file to .o file, $<(First dependent file) = .c file, $@ = target
-%.o: %.c
+# %.o: %.c
+# 	$(CC) $(CFLAGS) $(DEFS) -c $< -o $@
+build/%.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(DEFS) -c $< -o $@
 
 #.o -> firmware.elf, link object files and libopencm3_stm321 lib to generate elf file
-firmware.elf: $(OBJS) $(OPENCM3_DIR)/lib/lib$(LIBNAME).a
+$(ELF_FILE): $(OBJS) $(OPENCM3_DIR)/lib/lib$(LIBNAME).a
 	$(LD) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
 
-firmware.bin: firmware.elf
+$(BIN_FILE): $(ELF_FILE)
 	$(OBJCOPY) -O binary $< $@
 
-firmware.hex: firmware.elf
+$(HEX_FILE): $(ELF_FILE)
 	$(OBJCOPY) -O ihex $< $@
 
 ########################################################################
 #CLEAN
 clean:
-	rm -f $(OBJS) *.elf *.bin *.hex 
+	@rm -f *.elf *.bin *.hex 
+	@rm -rf build/

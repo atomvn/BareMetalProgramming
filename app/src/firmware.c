@@ -5,6 +5,7 @@
 #include <core/i2c.h>
 #include <core/exti.h>
 #include <mpu_6050.h>
+#include <core/timer.h>
 
 int main() {
 	// Set up sys clock using pll 
@@ -16,13 +17,14 @@ int main() {
 	// Init i2c1
 	i2c1_init();
 	// Init exti and configure PA0 as INT pin of mpu6050
-	gpio_exti_pa0_init();
-	afio_exti0_map_pa0();
-	exti0_init();
-	nvic_exti0_enable();
+	// gpio_exti_pa0_init();
+	// afio_exti0_map_pa0();
+	// exti0_init();
+	// nvic_exti0_enable();
+	timer2_ch1_pwm_setup();
 
 	// Init mpu6050
-	mpu6050_init();
+	// mpu6050_init();
 	// Enable GPIO and configure GPIO pin
 	gpio_enable_clock(GPIOC);
 	// gpio_enable_clock(GPIOA);
@@ -45,36 +47,37 @@ int main() {
 		// 		gpio_set(GPIOA, 0);
 		// 	}
 		// }
-			if (mpu_int_flag) {
-				// Toggle led
-				gpio_toggle(GPIOC, 13);
-				// Read mpu6050 data
-				mpu6050_read_raw(&mpu);
-				mpu_int_flag = 0;
-			} 
+			// if (mpu_int_flag) {
+			// 	// Toggle led
+			// 	// Read mpu6050 data
+			// 	mpu6050_read_raw(&mpu);
+			// 	mpu_int_flag = 0;
+			// } 
 		}
 		else {
+			gpio_toggle(GPIOC, 13);
+			run_servo();
 				// Print mpu6050 data
-				uart1_send_string("==============MPU6050 data=================\n");
-				uart1_send_string("ax: ");
-				uart1_send_float(mpu.ax, 5);
-				uart1_send_char('\n');
-				uart1_send_string("ay: ");
-				uart1_send_float(mpu.ay, 5);
-				uart1_send_char('\n');
-				uart1_send_string("az: ");
-				uart1_send_float(mpu.az, 5);
-				uart1_send_char('\n');
+				// uart1_send_string("==============MPU6050 data=================\n");
+				// uart1_send_string("ax: ");
+				// uart1_send_float(mpu.ax, 5);
+				// uart1_send_char('\n');
+				// uart1_send_string("ay: ");
+				// uart1_send_float(mpu.ay, 5);
+				// uart1_send_char('\n');
+				// uart1_send_string("az: ");
+				// uart1_send_float(mpu.az, 5);
+				// uart1_send_char('\n');
 
-				uart1_send_string("gx: ");
-				uart1_send_float(mpu.gx, 5);
-				uart1_send_char('\n');
-				uart1_send_string("gy: ");
-				uart1_send_float(mpu.gy, 5);
-				uart1_send_char('\n');
-				uart1_send_string("gz: ");
-				uart1_send_float(mpu.gz, 5);
-				uart1_send_char('\n');
+				// uart1_send_string("gx: ");
+				// uart1_send_float(mpu.gx, 5);
+				// uart1_send_char('\n');
+				// uart1_send_string("gy: ");
+				// uart1_send_float(mpu.gy, 5);
+				// uart1_send_char('\n');
+				// uart1_send_string("gz: ");
+				// uart1_send_float(mpu.gz, 5);
+				// uart1_send_char('\n');
 				// Reassign start time
 				start = millis();
 				// mpu6050_read(0x75);

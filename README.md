@@ -7,6 +7,8 @@ Drivers include:
 3. GPIO
 4. UART
 5. I2C
+6. EXTI
+7. Timer
 
 Applications include:
 1. Reading MPU6050 
